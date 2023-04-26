@@ -17,8 +17,12 @@ def start(message):
     temperature = types.KeyboardButton('temperature')
     airport = types.KeyboardButton('airport')
     markup.add(location, temperature, airport)
-    bot.send_message(message.chat.id, "Привет, я бот, который умеет говорить температуру в конкретном городе и"
-                                      "показывать где он находится", reply_markup=markup)
+    bot.send_message(message.chat.id, "Привет, я бот, который умеет говорить температуру в конкретном городе, "
+                                      "показывать где он находится и вывести названия всех аэропортов в этом городе."
+                                      "Чтобы получить локацию введите 'location', чтобы получить текущую температуру "
+                                      "введите 'temperature'. Чтобы узнать какие аэропорты есть в городе, введите "
+                                      "'airport'",
+                     reply_markup=markup)
 
 
 @bot.message_handler(content_types=['text'])
@@ -31,7 +35,7 @@ def request(message):
         bot.register_next_step_handler(message, send_temperature)
     elif message.text == "airport":
         bot.send_message(message.chat.id, "Введите название города на английском языке с большой буквы и сокращённое"
-                                          " название страны (например GB - Great Britain  или BR - Brazil)")
+                                          " название страны (например GB - Great Britain или BR - Brazil)")
         bot.register_next_step_handler(message, send_airport)
 
 
@@ -55,13 +59,15 @@ def send_airport(message):
     city = message.text.split()[0]
     user_country = message.text.split()[1]
     if check_airport_existing(message, airport_info):
-        airports = ' '
+        airports = ''
         for airport in airport_info:
             country = airport["country"]
             if country == user_country:
                 name = airport["name"]
                 region = airport["region"]
                 airports += f'Название аэропорта в {country}, {region}, {city}: {name}\n'
+        if airports == '':
+            airports = "В указанной стране либо нет такого города, либо в нём нет аэропортов."
         bot.send_message(message.chat.id, airports)
 
 
