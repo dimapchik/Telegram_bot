@@ -7,19 +7,13 @@ bot = telebot.TeleBot(token)
 weather_api = "041a995e39ea3d7536ed0d43eab777c7"
 
 
-@bot.message_handler(commands=['help'])
+@bot.message_handler(commands=['help', 'start'])
 def start(message):
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
     location = types.KeyboardButton('location')
     temperature = types.KeyboardButton('temperature')
-    photo = types.KeyboardButton('photo location')
-    markup.add(location, temperature, photo)
-    bot.send_message(message.chat.id, "HEEEEEEEEEEELP", reply_markup=markup)
-
-
-@bot.message_handler(commands=['weather'])
-def weather(message):
-    bot.send_message(message.chat.id, "Введите название города.")
+    markup.add(location, temperature)
+    bot.send_message(message.chat.id, "Привет, я бот, который умеет говорить температуру в конкретном городе и показывать где он находится", reply_markup=markup)
 
 
 @bot.message_handler(content_types=['text'])
@@ -39,15 +33,24 @@ def execute_request(message):
 
 def send_location(message):
     weather_info = execute_request(message)
-    lat = weather_info["coord"]["lat"]
-    lon = weather_info["coord"]["lon"]
-    bot.send_location(message.chat.id, lat, lon)
+    if check_existing(message, weather_info):
+        lat = weather_info["coord"]["lat"]
+        lon = weather_info["coord"]["lon"]
+        bot.send_location(message.chat.id, lat, lon)
 
 
 def send_temperature(message):
     weather_info = execute_request(message)
-    temp = weather_info["main"]["temp"]
-    bot.send_message(message.chat.id, f'Текущая температура в городе {message.text}: {temp}')
+    if check_existing(message, weather_info):
+        temp = weather_info["main"]["temp"]
+        bot.send_message(message.chat.id, f'Текущая температура в городе {message.text}: {temp}')
+
+
+def check_existing(message, weather_info):
+    if weather_info["cod"] != 200:
+        bot.send_message(message.chat.id, "Я не знаю такого города, выберите функцию заново")
+        return False
+    return True
 
 
 bot.polling(none_stop=True)
