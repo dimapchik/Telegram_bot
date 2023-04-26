@@ -24,23 +24,30 @@ def weather(message):
 
 @bot.message_handler(content_types=['text'])
 def request(message):
-    if message.text == "location" or message.text == "temperature":
+    if message.text == "location":
         bot.send_message(message.chat.id, "Введите название города")
-        return
+        bot.register_next_step_handler(message, send_location)
+    elif message.text == "temperature":
+        bot.send_message(message.chat.id, "Введите название города")
+        bot.register_next_step_handler(message, send_temperature)
+
+def execute_request(message):
     city = message.text.lower().strip()
     data = requests.get(f'https://api.openweathermap.org/data/2.5/weather?q={city}&appid={weather_api}&units=metric')
-    weather_info = json.loads(data.text)
-    if weather_info["cod"] != 200:
-        bot.send_message(message.chat.id, "Я не знаю такого города")
-    else:
-        lat = weather_info["coord"]["lat"]
-        lon = weather_info["coord"]["lon"]
-        temp = weather_info["main"]["temp"]
-        if message.text == "location":
-            bot.send_location(message.chat.id, lat, lon)
-        if message.text == "temperature":
-            bot.send_message(message.chat.id, f'Текущая температора в городе {city} : {temp}')
+    return json.loads(data.text)
 
+
+def send_location(message):
+    weather_info = execute_request(message)
+    lat = weather_info["coord"]["lat"]
+    lon = weather_info["coord"]["lon"]
+    bot.send_location(message.chat.id, lat, lon)
+
+
+def send_temperature(message):
+    weather_info = execute_request(message)
+    temp = weather_info["main"]["temp"]
+    bot.send_message(message.chat.id, f'Текущая температура в городе {message.text}: {temp}')
 
 
 bot.polling(none_stop=True)
