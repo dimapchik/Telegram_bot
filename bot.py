@@ -14,14 +14,15 @@ airport_url = "https://api.api-ninjas.com/v1/airports?city="
 @bot.callback_query_handler(func=lambda call_back: call_back.data == "time in a particular city")
 def send_particular_time(callback_query):
     bot.answer_callback_query(callback_query.id)
-    bot.send_message(callback_query.from_user.id, "Введите название города")
+    bot.send_message(callback_query.from_user.id, "Write name of city")
     bot.register_next_step_handler(callback_query.message, send_time)
 
 
 @bot.callback_query_handler(func=lambda call_back: call_back.data == "time difference between two cities")
 def send_particular_time(callback_query):
     bot.answer_callback_query(callback_query.id)
-    bot.send_message(callback_query.from_user.id, "Введите название городов через знак #")
+    bot.send_message(callback_query.from_user.id, "Write the name of the cities through the sign # "
+                                                  "(ex. Moscow # Berlin)")
     bot.register_next_step_handler(callback_query.message, send_difference)
 
 
@@ -33,25 +34,24 @@ def start(message):
     airport_button = types.KeyboardButton('airport')
     time_button = types.KeyboardButton('time')
     markup.add(location_button, weather_button, airport_button, time_button)
-    bot.send_message(message.chat.id, "Привет, я бот, который умеет говорить температуру в конкретном городе, "
-                                      "показывать где он находится и вывести названия всех аэропортов в этом городе."
-                                      "Чтобы получить локацию введите 'location', чтобы получить текущую температуру "
-                                      "введите 'weather'. Чтобы узнать какие аэропорты есть в городе, введите "
-                                      "'airport'",
+    bot.send_message(message.chat.id, "Hi, I'm GeoTimingBot. I can send location by name of city (for it you need "
+                                      "write 'location'), send particular weather in city (write 'weather'), "
+                                      "also I can send you list of airports in your city (write 'airports'), also send "
+                                      "you current time in city or difference time in cities",
                      reply_markup=markup)
 
 
 @bot.message_handler(content_types=['text'])
 def request(message):
     if message.text == "location":
-        bot.send_message(message.chat.id, "Введите название города")
+        bot.send_message(message.chat.id, "Write name of city")
         bot.register_next_step_handler(message, send_location)
     elif message.text == "weather":
-        bot.send_message(message.chat.id, "Введите название города")
+        bot.send_message(message.chat.id, "Write name of city")
         bot.register_next_step_handler(message, send_weather)
     elif message.text == "airport":
-        bot.send_message(message.chat.id, "Введите название города на английском языке с большой буквы и сокращённое"
-                                          " название страны (например GB - Great Britain или BR - Brazil)")
+        bot.send_message(message.chat.id, "Write name of city and short name of country (ex. London GB,"
+                                          " or San Francisco US)")
         bot.register_next_step_handler(message, send_airport)
     elif message.text == "time":
         markup = types.InlineKeyboardMarkup()
@@ -80,7 +80,7 @@ def send_weather(message):
         description = weather_info["weather"][0]["description"]
         path_to_image = weather_info["weather"][0]["icon"]
         icon = open(f'./img/{path_to_image}.png', 'rb')
-        bot.send_message(message.chat.id, f'Текущая погода в городе {message.text}: \n {temp} градусов Цельсия \n'
+        bot.send_message(message.chat.id, f'Current weather in {message.text}: \n {temp} degrees Celcius \n'
                                           f'{description}')
         bot.send_photo(message.chat.id, icon)
 
@@ -96,9 +96,10 @@ def send_airport(message):
             if country == user_country:
                 name = airport["name"]
                 region = airport["region"]
-                airports += f'Название аэропорта в {country}, {region}, {city}: {name}\n'
+                airports += f'Name airports in {country}, {region}, {city}: {name}\n'
         if airports == '':
-            airports = "В указанной стране либо нет такого города, либо в нём нет аэропортов."
+            airports = "Either there is no such city in the specified country, or there are no airports in it." \
+                       "Reselect function"
         bot.send_message(message.chat.id, airports)
 
 
@@ -110,7 +111,7 @@ def send_time(message):
 
 def send_difference(message):
     if not ('#' in message.text):
-        bot.send_message(message.chat.id, "Вы ввели города в неправильном формате. Заново выберите функцию")
+        bot.send_message(message.chat.id, "You have entered cities in the wrong format. Reselect function")
     else:
         city_1 = message.text.split('#')[0].lower().strip()
         city_2 = message.text.split('#')[1].lower().strip()
@@ -121,7 +122,7 @@ def send_difference(message):
         sec_difference = abs(timezone_1 - timezone_2)
         fake_date = datetime.time(0, 0, 0)
         diff_time = add_secs(fake_date, sec_difference).strftime('%H:%M')
-        bot.send_message(message.chat.id, f'Разница между городами {city_1} и {city_2} составляет {diff_time}')
+        bot.send_message(message.chat.id, f'Difference between cities {city_1} and {city_2} is {diff_time}')
 
 
 def get_time(message, weather_info):
@@ -132,7 +133,7 @@ def get_time(message, weather_info):
 
 
 def execute_weather_request(city):
-    data = requests.get(weather_url + city + "&appid=" + weather_api + "&units=metric" + "&lang=ru")
+    data = requests.get(weather_url + city + "&appid=" + weather_api + "&units=metric" + "&lang=en")
     return json.loads(data.text)
 
 
@@ -143,14 +144,15 @@ def execute_airport_request(city):
 
 def check_weather_existing(message, weather_info):
     if weather_info["cod"] != 200:
-        bot.send_message(message.chat.id, "Я не знаю такого города, выберите функцию заново")
+        bot.send_message(message.chat.id, "I do not know such a city, please select the function again")
         return False
     return True
 
 
 def check_airport_existing(message, airport_info):
     if len(airport_info) == 0:
-        bot.send_message(message.chat.id, "Я не знаю есть ли в этом городе аэропорт, выберите функцию заново")
+        bot.send_message(message.chat.id, "I do not know if there is an airport in this city, select the function"
+                                          "again")
         return False
     return True
 
