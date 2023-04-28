@@ -1,6 +1,6 @@
 import telebot
 from telebot import types
-from send_requests import SendExec
+from src.send_requests import SendExec
 
 token = "6296134575:AAHFBzHRCKymKXzuD7LKVsCPDCFr9xSEsIU"
 bot = telebot.TeleBot(token)
