@@ -1,22 +1,17 @@
 import telebot
 from telebot import types
-from weather import *
-from airports import *
-from time import *
+from send_requests import SendExec
 
 token = "6296134575:AAHFBzHRCKymKXzuD7LKVsCPDCFr9xSEsIU"
 bot = telebot.TeleBot(token)
-weather_api = "041a995e39ea3d7536ed0d43eab777c7"
-weather_url = "https://api.openweathermap.org/data/2.5/weather?q="
-airport_api = "ZbKpv6j7r/SFc9pHBVyNzA==rvuihQ9TgbexYCIW"
-airport_url = "https://api.api-ninjas.com/v1/airports?city="
+my_send = SendExec(bot)
 
 
 @bot.callback_query_handler(func=lambda call_back: call_back.data == "time in a particular city")
 def send_particular_time(callback_query):
     bot.answer_callback_query(callback_query.id)
     bot.send_message(callback_query.from_user.id, "Write name of city")
-    bot.register_next_step_handler(callback_query.message, send_time)
+    bot.register_next_step_handler(callback_query.message, my_send.send_time)
 
 
 @bot.callback_query_handler(func=lambda call_back: call_back.data == "time difference between two cities")
@@ -24,7 +19,7 @@ def send_particular_time(callback_query):
     bot.answer_callback_query(callback_query.id)
     bot.send_message(callback_query.from_user.id, "Write the name of the cities through the sign # "
                                                   "(ex. Moscow # Berlin)")
-    bot.register_next_step_handler(callback_query.message, send_difference)
+    bot.register_next_step_handler(callback_query.message, my_send.send_difference)
 
 
 @bot.message_handler(commands=['start'])
@@ -58,14 +53,14 @@ def help_request(message):
 def request(message):
     if message.text == "/location":
         bot.send_message(message.chat.id, "Write name of city")
-        bot.register_next_step_handler(message, send_location)
+        bot.register_next_step_handler(message, my_send.send_location)
     elif message.text == "/weather":
         bot.send_message(message.chat.id, "Write name of city")
-        bot.register_next_step_handler(message, send_weather)
+        bot.register_next_step_handler(message, my_send.send_weather)
     elif message.text == "/airports":
         bot.send_message(message.chat.id, "Write name of city and short name of country (ex. London GB,"
                                           " or San Francisco US)")
-        bot.register_next_step_handler(message, send_airport)
+        bot.register_next_step_handler(message, my_send.send_airport)
     elif message.text == "/time":
         markup = types.InlineKeyboardMarkup()
         time_in_city_button = types.InlineKeyboardButton("time in a particular city",
