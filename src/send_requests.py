@@ -43,8 +43,8 @@ class SendExec:
                             region = airport["region"]
                             airports += f'Name airports in {country}, {region}, {city}: {name}\n'
                     if airports == '':
-                        airports = "Either there is no such city in the specified country, or there are no airports in " \
-                                   "it.Reselect function"
+                        airports = "Either there is no such city in the specified country, or there are no airports " \
+                                   "in it.Reselect function"
                     self.my_api.bot.send_message(message.chat.id, airports)
             else:
                 self.my_api.bot.send_message(message.chat.id, "You have entered city and country in the wrong format."
