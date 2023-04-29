@@ -30,21 +30,25 @@ class SendExec:
 
     def send_airport(self, message):
         if self.my_api.is_message_text(message):
-            city = message.text.lower().strip().split()[0]
-            airport_info = self.my_api.execute_airport_request(city)
-            user_country = message.text.split()[1]
-            if self.my_api.check_airport_existing(message, airport_info):
-                airports = ''
-                for airport in airport_info:
-                    country = airport["country"]
-                    if country == user_country:
-                        name = airport["name"]
-                        region = airport["region"]
-                        airports += f'Name airports in {country}, {region}, {city}: {name}\n'
-                if airports == '':
-                    airports = "Either there is no such city in the specified country, or there are no airports in " \
-                               "it.Reselect function"
-                self.my_api.bot.send_message(message.chat.id, airports)
+            if ' ' in message.text:
+                city = message.text.lower().strip().rpartition(' ')[0]
+                airport_info = self.my_api.execute_airport_request(city)
+                user_country = message.text.rpartition(' ')[-1]
+                if self.my_api.check_airport_existing(message, airport_info):
+                    airports = ''
+                    for airport in airport_info:
+                        country = airport["country"]
+                        if country == user_country:
+                            name = airport["name"]
+                            region = airport["region"]
+                            airports += f'Name airports in {country}, {region}, {city}: {name}\n'
+                    if airports == '':
+                        airports = "Either there is no such city in the specified country, or there are no airports in " \
+                                   "it.Reselect function"
+                    self.my_api.bot.send_message(message.chat.id, airports)
+            else:
+                self.my_api.bot.send_message(message.chat.id, "You have entered city and country in the wrong format."
+                                                              "Reselect function")
 
     def send_time(self, message):
         if self.my_api.is_message_text(message):

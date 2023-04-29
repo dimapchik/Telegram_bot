@@ -27,7 +27,7 @@ def start(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
     location_button = types.KeyboardButton('/location')
     weather_button = types.KeyboardButton('/weather')
-    airport_button = types.KeyboardButton('/airport')
+    airport_button = types.KeyboardButton('/airports')
     time_button = types.KeyboardButton('/time')
     markup.add(location_button, weather_button, airport_button, time_button)
     bot.send_message(message.chat.id, "Hi, I'm GeoTimingBot. I can send location by name of city (for it you need "

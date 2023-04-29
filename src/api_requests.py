@@ -18,12 +18,12 @@ class ApiExec:
         self.bot = bot
 
     def execute_airport_request(self, city):
-        data = requests.get(self.airport_url + city, headers={'X-Api-Key': self.airport_api})
+        data = requests.get(self.airport_url + str(city), headers={'X-Api-Key': self.airport_api})
         return json.loads(data.text)
 
     def check_airport_existing(self, message, airport_info):
         if len(airport_info) == 0:
-            self.bot.send_message(message.chat.id, "I do not know if there is an airport in this city, select the"
+            self.bot.send_message(message.chat.id, "I do not know if there is an airport in this city, select the "
                                                    "function again")
             return False
         return True
