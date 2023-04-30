@@ -24,7 +24,7 @@ class SendExec:
                 description = weather_info["weather"][0]["description"]
                 path_to_image = weather_info["weather"][0]["icon"]
                 icon = open(f'./img/{path_to_image}.png', 'rb')
-                self.my_api.bot.send_message(message.chat.id, f'Current weather in {message.text}: \n {temp} degrees'
+                self.my_api.bot.send_message(message.chat.id, f'Current weather in {message.text}: \n {temp} degrees '
                                                               f'Celsius \n {description}')
                 self.my_api.bot.send_photo(message.chat.id, icon)
 
