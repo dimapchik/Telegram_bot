@@ -34,7 +34,7 @@ def start(message):
                                       "write /location), send particular weather in city (write /weather), "
                                       "also I can send you list of airports in your city (write /airports), also send "
                                       "you current time in city or difference time in cities (write /time). "
-                                      "For squalor you can use buttons under your keyboard",
+                                      "For squalor you can use buttons",
                      reply_markup=markup)
 
 
@@ -71,10 +71,34 @@ def request(message):
         bot.send_message(message.chat.id, "What kind of time option do you want?", reply_markup=markup)
 
 
-@bot.message_handler()
-def text_request(message):
-    bot.send_message(message.chat.id, "I don't know this command.\nYou can write /help or use buttons "
-                                      "under your keyboard")
+@bot.message_handler(content_types=['text'])
+def request(message):
+    bot.send_message(message.chat.id, "I don't know this command.\nYou can write /help or use buttons")
+
+
+@bot.message_handler(content_types=['photo'])
+def request(message):
+    bot.send_message(message.chat.id, "Nice photo but i can't execute it(.\nYou can write /help or use buttons")
+
+
+@bot.message_handler(content_types=['video'])
+def request(message):
+    bot.send_message(message.chat.id, "Nice video but i can't execute it(.\nYou can write /help or use buttons")
+
+
+@bot.message_handler(content_types=['voice', 'audio'])
+def request(message):
+    bot.send_message(message.chat.id, "Nice voice but i can't execute it(.\nYou can write /help or use buttons")
+
+
+@bot.message_handler(content_types=['document'])
+def request(message):
+    bot.send_message(message.chat.id, "Nice file but i can't execute it(.\nYou can write /help or use buttons")
+
+
+@bot.message_handler(content_types=['animation'])
+def request(message):
+    bot.send_message(message.chat.id, "Nice animation but i can't execute it(.\nYou can write /help or use buttons")
 
 
 bot.polling(none_stop=True)
