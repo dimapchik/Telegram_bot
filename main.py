@@ -45,8 +45,8 @@ def help_request(message):
                                       "/location - get location by name of city \n"
                                       "/weather - get particular weather by name of city \n"
                                       "/airports - get list of airports in city \n"
-                                      "/time - get current time by name of city or get time difference between two"
-                                      "cities")
+                                      "/time - get current time by name of city or get absolute time difference "
+                                      "between two cities")
 
 
 @bot.message_handler(commands=['location', 'weather', 'airports', 'time'])
@@ -71,15 +71,10 @@ def request(message):
         bot.send_message(message.chat.id, "What kind of time option do you want?", reply_markup=markup)
 
 
-@bot.message_handler(content_types=['text'])
-def text_request(message):
-    bot.send_message(message.chat.id, "I don't know this command. You can write /help or use buttons "
-                                      "under your keyboard")
-
-
 @bot.message_handler()
-def bad_request(message):
-    bot.send_message(message.chat.id, "I can't handle any types is not a text(")
+def text_request(message):
+    bot.send_message(message.chat.id, "I don't know this command.\nYou can write /help or use buttons "
+                                      "under your keyboard")
 
 
 bot.polling(none_stop=True)

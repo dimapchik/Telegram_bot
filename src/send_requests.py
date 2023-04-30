@@ -59,7 +59,7 @@ class SendExec:
                                                                                    weather_info).strftime('%H:%M'))
 
     def send_difference(self, message):
-        if not ('#' in message.text):
+        if not ('#' in message.text) or (message.text is None):
             self.my_api.bot.send_message(message.chat.id, "You have entered cities in the wrong format. "
                                                           "Reselect function")
         else:

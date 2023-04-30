@@ -45,7 +45,7 @@ class ApiExec:
             return add_secs(now, timezone)
 
     def is_message_text(self, message):
-        if len(message.text) == 0:
-            self.bot.send_message(message.chat.id, "You didn't enter any letters? Select function again")
+        if message.text is None:
+            self.bot.send_message(message.chat.id, "Please don't send me any files. Reselect function")
             return False
         return True
