@@ -2,7 +2,7 @@ import telebot
 from telebot import types
 from src.send_requests import SendExec
 
-token = "6296134575:AAHFBzHRCKymKXzuD7LKVsCPDCFr9xSEsIU"
+token = <our_token>
 bot = telebot.TeleBot(token)
 my_send = SendExec(bot)
 
