@@ -33,7 +33,7 @@ class ApiExec:
         return json.loads(data.text)
 
     def check_weather_existing(self, message, weather_info):
-        if weather_info["cod"] != 200:
+        if weather_info["code"] != 200:
             self.bot.send_message(message.chat.id, "I do not know such a city, please select the function again")
             return False
         return True
